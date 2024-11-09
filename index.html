@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Result Ranking</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #000000;
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background-color: #f10808;
+      height: 30px;
+    }
+    tr:nth-child(even) {
+      background-color: #f3e075;
+    }
+    tr:hover {
+      background-color: #04ffab;
+    }
+    .pass {
+      color: green;
+      font-weight: bold;
+    }
+    .fail {
+      color: red;
+      font-weight: bold;
+    }
+    .not-given {
+      color: gray;
+      font-weight: bold;
+    }
+    .button-container {
+      margin-top: 20px;
+      text-align: center;
+    }
+    .btn {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+      margin: 10px;
+    }
+    .btn:hover {
+      background-color: #45a049;
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 600px) {
+      table, th, td {
+        font-size: 12px;
+        padding: 6px;
+      }
+
+      .button-container {
+        margin-top: 15px;
+      }
+
+      .btn {
+        padding: 8px 16px;
+        font-size: 14px;
+      }
+
+      .table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1 style="text-align: center;">Student Results with Ranks</h1>
+  
+  <div class="table-container">
+    <table style="background-color: #f3e075;">
+      <tr>
+        <th>Sl. No</th>
+        <th>Roll No</th>
+        <th>Student Name</th>
+        <th>Marks (out of 500)</th>
+        <th>Rank</th>
+        <th>Status</th>
+      </tr>
+      <tbody id="studentTable">
+        <!-- Rows will be dynamically populated -->
+      </tbody>
+    </table>
+  </div>
+
+  <div class="button-container">
+    <button class="btn" onclick="downloadPDF()">Download PDF</button>
+  </div>
+
+  <!-- Include jsPDF library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <script>
+    const students = [
+      { rollNo: 'R001', name: 'John Doe', marks: 480 },
+      { rollNo: 'R002', name: 'Jane Smith', marks: 490 },
+      { rollNo: 'R003', name: 'Alice Brown', marks: 450 },
+      { rollNo: 'R004', name: 'Bob Johnson', marks: 420 },
+      { rollNo: 'R005', name: 'Charlie Lee', marks: 400 },
+      { rollNo: 'R006', name: 'Emily Davis', marks: 500 },
+      { rollNo: 'R007', name: 'Michael Wilson', marks: 470 },
+      { rollNo: 'R008', name: 'Sarah Miller', marks: 460 },
+      { rollNo: 'R009', name: 'David Taylor', marks: 440 },
+      { rollNo: 'R010', name: 'Sophia Anderson', marks: 410 },
+      { rollNo: 'R011', name: 'James Thomas', marks: 500 },
+      { rollNo: 'R012', name: 'Olivia Moore', marks: 390 },
+      { rollNo: 'R013', name: 'Daniel Harris', marks: 370 },
+      { rollNo: 'R014', name: 'Isabella Martin', marks: 350 },
+      { rollNo: 'R015', name: 'Chris White', marks: 330 },
+      { rollNo: 'R016', name: 'Emma Thompson', marks: 310 },
+      { rollNo: 'R017', name: 'Ethan Walker', marks: 490 },
+      { rollNo: 'R018', name: 'Ava Scott', marks: 470 },
+      { rollNo: 'R019', name: 'Henry Green', marks: 460 },
+      { rollNo: 'R020', name: 'Liam Baker', marks: 450 },
+      { rollNo: 'R021', name: 'Mia Carter', marks: 440 },
+      { rollNo: 'R022', name: 'Noah Mitchell', marks: 430 },
+      { rollNo: 'R023', name: 'Zoe Phillips', marks: 420 },
+      { rollNo: 'R024', name: 'Alexander Hall', marks: 410 },
+      { rollNo: 'R025', name: 'Ella Parker', marks: 400 },
+      { rollNo: 'R026', name: 'Lucas Young', marks: 390 },
+      { rollNo: 'R027', name: 'Amelia Allen', marks: 380 },
+      { rollNo: 'R028', name: 'Jack King', marks: 370 },
+      { rollNo: 'R029', name: 'Lily Wright', marks: 360 },
+      { rollNo: 'R030', name: 'Benjamin Hill', marks: 350 },
+      { rollNo: 'R031', name: 'Grace Adams', marks: 340 },
+      { rollNo: 'R032', name: 'Nathan Collins', marks: 330 },
+      { rollNo: 'R033', name: 'Charlotte Nelson', marks: 320 },
+      { rollNo: 'R034', name: 'Samuel Ward', marks: 310 },
+      { rollNo: 'R035', name: 'Harper Morris', marks: 500 },
+      { rollNo: 'R036', name: 'Elijah Murphy', marks: 495 },
+      { rollNo: 'R037', name: 'Abigail Rogers', marks: 475 },
+      { rollNo: 'R038', name: 'Logan Reed', marks: 470 },
+      { rollNo: 'R039', name: 'Chloe Cook', marks: 460 },
+      { rollNo: 'R040', name: 'Mason Morgan', marks: 450 },
+      { rollNo: 'R041', name: 'Madison Bell', marks: 440 },
+      { rollNo: 'R042', name: 'Sebastian Sanders', marks: 430 },
+      { rollNo: 'R043', name: 'Scarlett Hughes', marks: 420 },
+      { rollNo: 'R044', name: 'Dylan Price', marks: 410 },
+      { rollNo: 'R045', name: 'Victoria Butler', marks: 500 },
+      { rollNo: 'R046', name: 'Oliver Ross', marks: 495 },
+      { rollNo: 'R047', name: 'Aria Foster', marks: 475 },
+      { rollNo: 'R048', name: 'Jacob Powell', marks: 455 },
+      { rollNo: 'R049', name: 'Lillian Ward', marks: 450 },
+      { rollNo: 'R050', name: 'Ryan James', marks: 440 },
+      { rollNo: 'R051', name: 'Ella Brooks', marks: 0 }, // Did not appear
+      { rollNo: 'R052', name: 'Tom Harris', marks: 30 }, // Failed
+      { rollNo: 'R053', name: 'Sophia Lewis', marks: 20 }, // Failed
+      { rollNo: 'R054', name: 'Ethan Clark', marks: 15 }, // Failed
+      { rollNo: 'R055', name: 'Jack Davis', marks: 0 }, // Did not appear
+      { rollNo: 'R056', name: 'Maya Wilson', marks: 45 }, // Failed
+      { rollNo: 'R057', name: 'Liam Smith', marks: 10 }, // Failed
+      { rollNo: 'R058', name: 'Olivia Young', marks: 0 }, // Did not appear
+      { rollNo: 'R059', name: 'Benjamin Adams', marks: 20 }, // Failed
+      { rollNo: 'R060', name: 'Natalie Green', marks: 0 }, // Did not appear
+    ];
+
+    // Sort students based on marks (descending)
+    const sortedStudents = students.sort((a, b) => b.marks - a.marks);
+
+    // Generate table rows with ranks and pass/fail status
+    const tableBody = document.getElementById('studentTable');
+
+    sortedStudents.forEach((student, index) => {
+      let rank = index + 1;
+      let status = 'Pass';
+
+      if (student.marks === 0) {
+        status = 'Did Not Appear';
+      } else if (student.marks < 35) {
+        status = 'Fail';
+      }
+
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${rank}</td>
+        <td>${student.rollNo}</td>
+        <td>${student.name}</td>
+        <td>${student.marks}</td>
+        <td>${rank}</td>
+        <td class="${status === 'Pass' ? 'pass' : (status === 'Fail' ? 'fail' : 'not-given')}">${status}</td>
+      `;
+      tableBody.appendChild(row);
+    });
+
+    // Function to download PDF with table formatting
+    function downloadPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      let y = 10;
+
+      doc.setFontSize(18);
+      doc.text('Student Result with Ranks', 20, y);
+      y += 10;
+
+      // Table Header
+      doc.setFontSize(12);
+      doc.setTextColor(0);
+      doc.text('Sl. No', 20, y);
+      doc.text('Roll No', 60, y);
+      doc.text('Student Name', 110, y);
+      doc.text('Marks', 180, y);
+      doc.text('Rank', 220, y);
+      doc.text('Status', 260, y);
+      y += 10;
+
+      // Table Rows
+      sortedStudents.forEach((student, index) => {
+        let status = student.marks === 0 ? 'Did Not Appear' : student.marks < 35 ? 'Fail' : 'Pass';
+        doc.text((index + 1).toString(), 20, y);
+        doc.text(student.rollNo, 60, y);
+        doc.text(student.name, 110, y);
+        doc.text(student.marks.toString(), 180, y);
+        doc.text((index + 1).toString(), 220, y);
+        doc.text(status, 260, y);
+        y += 10;
+      });
+
+      doc.save('student_results.pdf');
+    }
+  </script>
+</body>
+</html>
